@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Village</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Exo+2:wght@300;400;600;700;900&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #F5C842;
+  --gold-dark: #C9922A;
+  --gold-light: #FFE083;
+  --emerald: #2ECC71;
+  --emerald-dark: #1A7A43;
+  --sky: #5DADE2;
+  --sky-dark: #2E86C1;
+  --dark-bg: #0D1117;
+  --dark-panel: #161B22;
+  --dark-card: #1C2433;
+  --dark-border: #2D3748;
+  --text-primary: #E8EAED;
+  --text-secondary: #9AA0A6;
+  --danger: #E74C3C;
+  --sidebar-w: 200px;
+  --teal: #1ABC9C;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--dark-panel);
+  border-right: 1px solid var(--dark-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+.sidebar-logo {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--dark-border);
+  text-align: center;
+}
+.sidebar-logo .logo-text {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+.sidebar-logo .logo-sub {
+  font-size: 9px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.nav-item:hover { background: rgba(245,200,66,0.05); color: var(--text-primary); }
+.nav-item.active {
+  background: rgba(245,200,66,0.09);
+  border-left-color: var(--gold);
+  color: var(--gold);
+  font-weight: 600;
+}
+.nav-icon { width: 18px; text-align: center; font-size: 14px; }
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 16px;
+  border-top: 1px solid var(--dark-border);
+}
+.user-pill { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #000;
+}
+
+/* MAIN */
+#main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--dark-bg);
+}
+#main::-webkit-scrollbar { width: 5px; }
+#main::-webkit-scrollbar-track { background: transparent; }
+#main::-webkit-scrollbar-thumb { background: var(--dark-border); border-radius: 3px; }
+
+.page { display: none; padding: 28px; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* DASHBOARD */
+.dash-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.dash-title { font-family: 'Cinzel Decorative', serif; font-size: 17px; color: var(--gold); }
+.dash-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
+
+.island-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+.island-wrapper svg { width: 100%; max-width: 380px; height: auto; filter: drop-shadow(0 8px 24px rgba(0,0,0,0.5)); }
+
+.level-section {
+  background: var(--dark-card);
+  border: 1px solid var(--dark-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+}
+.level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.level-badge {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #000; font-weight: 700; font-size: 10px;
+  padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
+}
+.level-name { font-size: 14px; font-weight: 600; }
+.level-detail { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; }
+.progress-track { background: rgba(255,255,255,0.07); border-radius: 20px; height: 12px; overflow: hidden; }
+.progress-fill {
+  height: 100%; border-radius: 20px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+  transition: width 1s cubic-bezier(.4,0,.2,1);
+  position: relative; overflow: hidden;
+}
+.progress-fill::after {
+  content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background: rgba(255,255,255,0.25); animation: shimmer 2s infinite;
+}
+@keyframes shimmer { to { left:200%; } }
+.progress-pct { font-size: 11px; color: var(--text-secondary); text-align: right; margin-top: 4px; }
+
+.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.stat-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 10px; padding: 14px; text-align: center;
+}
+.stat-value { font-size: 20px; font-weight: 700; color: var(--gold); }
+.stat-label { font-size: 10px; color: var(--text-secondary); margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
+
+.dash-btn {
+  width: 100%; padding: 13px; border-radius: 10px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #000; font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 700;
+  letter-spacing: 1px; transition: all 0.2s;
+}
+.dash-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+/* SESSIONS */
+.page-title { font-family: 'Cinzel Decorative', serif; font-size: 14px; color: var(--gold); margin-bottom: 20px; }
+.tab-row {
+  display: flex; gap: 0; margin-bottom: 22px;
+  background: var(--dark-card); border-radius: 10px; padding: 4px; border: 1px solid var(--dark-border);
+}
+.tab-btn {
+  flex: 1; padding: 9px; border-radius: 7px; border: none; cursor: pointer;
+  background: transparent; color: var(--text-secondary); font-family: 'Exo 2', sans-serif;
+  font-size: 13px; font-weight: 600; transition: all 0.2s;
+}
+.tab-btn.active { background: var(--gold); color: #000; }
+.sub-page { display: none; }
+.sub-page.active { display: block; }
+
+.timer-display {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 14px; padding: 28px; text-align: center; margin-bottom: 16px;
+}
+.timer-digits {
+  font-family: 'Exo 2', sans-serif; font-size: 52px; font-weight: 900;
+  color: var(--gold); letter-spacing: 4px;
+}
+.timer-label { font-size: 11px; color: var(--text-secondary); margin-top: 6px; letter-spacing: 2px; text-transform: uppercase; }
+.timer-subject {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--dark-border);
+  border-radius: 8px; padding: 10px 14px; font-family: 'Exo 2', sans-serif;
+  color: var(--text-primary); font-size: 14px; width: 100%; margin-bottom: 12px; outline: none;
+}
+.timer-subject:focus { border-color: var(--gold); }
+.timer-btns { display: flex; gap: 10px; }
+.btn-start {
+  flex: 1; padding: 12px; border-radius: 9px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--emerald-dark), var(--emerald));
+  color: #fff; font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 700; transition: all 0.2s;
+}
+.btn-stop {
+  flex: 1; padding: 12px; border-radius: 9px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, #922B21, var(--danger));
+  color: #fff; font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 700; transition: all 0.2s; display: none;
+}
+.btn-start:hover, .btn-stop:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 5px; display: block; letter-spacing: 1px; text-transform: uppercase; }
+.form-input {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--dark-border);
+  border-radius: 8px; padding: 10px 14px; font-family: 'Exo 2', sans-serif;
+  color: var(--text-primary); font-size: 14px; width: 100%; outline: none;
+}
+.form-input:focus { border-color: var(--gold); }
+.btn-log {
+  width: 100%; padding: 12px; border-radius: 9px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--sky-dark), var(--sky));
+  color: #fff; font-family: 'Exo 2', sans-serif; font-size: 14px; font-weight: 700; transition: all 0.2s; margin-top: 4px;
+}
+.btn-log:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.session-list { margin-top: 22px; }
+.session-list-title { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.session-item {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 9px; padding: 12px 14px; margin-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.session-subject { font-size: 13px; font-weight: 600; }
+.session-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.session-duration { font-size: 13px; font-weight: 700; color: var(--gold); background: rgba(245,200,66,0.1); border-radius: 6px; padding: 4px 10px; }
+
+/* FRIENDS */
+.friends-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.btn-add-friend {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--gold);
+  background: transparent; color: var(--gold); font-family: 'Exo 2', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+}
+.btn-add-friend:hover { background: rgba(245,200,66,0.1); }
+.add-friend-modal {
+  display: none; background: var(--dark-card); border: 1px solid var(--gold);
+  border-radius: 12px; padding: 16px; margin-bottom: 20px;
+}
+.add-friend-modal.show { display: block; }
+.add-modal-title { font-size: 13px; font-weight: 600; color: var(--gold); margin-bottom: 8px; }
+.add-modal-info { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px; }
+.code-box {
+  background: rgba(245,200,66,0.1); border: 1px solid var(--gold);
+  border-radius: 8px; padding: 10px 14px; font-size: 16px; font-weight: 700;
+  color: var(--gold); letter-spacing: 3px; text-align: center; margin-bottom: 12px; cursor: pointer;
+}
+.add-row { display: flex; gap: 8px; }
+.code-input {
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--dark-border);
+  border-radius: 8px; padding: 9px 12px; font-family: 'Exo 2', sans-serif;
+  color: var(--text-primary); font-size: 13px; outline: none; text-transform: uppercase; letter-spacing: 2px;
+}
+.code-input:focus { border-color: var(--gold); }
+.btn-connect {
+  padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #000; font-family: 'Exo 2', sans-serif; font-size: 12px; font-weight: 700;
+}
+.ranking-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.friend-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px; transition: border-color 0.2s;
+}
+.friend-card:hover { border-color: rgba(245,200,66,0.4); }
+.friend-rank { font-size: 15px; font-weight: 900; color: var(--text-secondary); width: 22px; text-align: center; }
+.rank-1 { color: var(--gold); }
+.rank-2 { color: #C0C0C0; }
+.rank-3 { color: #CD7F32; }
+.friend-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.friend-info { flex: 1; }
+.friend-name { font-size: 13px; font-weight: 600; }
+.friend-status { font-size: 11px; margin-top: 2px; }
+.status-online { color: var(--emerald); }
+.status-offline { color: var(--text-secondary); }
+.friend-right { text-align: right; }
+.friend-level { font-size: 11px; color: var(--gold); font-weight: 700; }
+.friend-time { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+/* STATISTICS */
+.stats-grid-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.stat-big-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 12px; padding: 16px 18px;
+}
+.stat-big-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.stat-big-value { font-size: 26px; font-weight: 700; color: var(--text-primary); }
+.stat-big-sub { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.stat-big-accent { color: var(--teal); font-weight: 600; }
+.stat-accent-bar {
+  height: 3px; border-radius: 2px; margin-top: 10px;
+  background: linear-gradient(90deg, var(--teal), rgba(26,188,156,0.2));
+}
+
+.chart-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 12px; padding: 18px 20px; margin-bottom: 16px;
+}
+.chart-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+.week-days { display: flex; gap: 6px; justify-content: space-between; }
+.week-day { flex: 1; text-align: center; }
+.week-day-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 6px; }
+.week-day-circle {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(26,188,156,0.15); border: 2px solid var(--teal);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto;
+  font-size: 11px; font-weight: 700; color: var(--teal);
+}
+.week-day-circle.dim { border-color: var(--dark-border); background: rgba(255,255,255,0.03); color: var(--text-secondary); }
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-header { font-size: 10px; color: var(--text-secondary); text-align: center; padding-bottom: 4px; }
+.cal-cell {
+  aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 10px; font-weight: 600;
+  background: rgba(255,255,255,0.03); color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.cal-cell.has-data { background: rgba(26,188,156,0.12); color: var(--teal); border: 1px solid rgba(26,188,156,0.25); }
+.cal-cell.has-data.high { background: rgba(26,188,156,0.25); border-color: rgba(26,188,156,0.5); }
+.cal-cell .cal-date { font-size: 9px; font-weight: 400; color: inherit; opacity: 0.7; }
+.cal-cell .cal-hours { font-size: 11px; font-weight: 700; }
+
+.line-chart-area { position: relative; height: 80px; }
+.line-chart-svg { width: 100%; height: 100%; overflow: visible; }
+
+.bottom-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.course-card {
+  background: var(--dark-card); border: 1px solid var(--dark-border);
+  border-radius: 12px; padding: 16px 18px;
+}
+.course-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.course-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); margin-right: 8px; display: inline-block; }
+.course-name { font-size: 13px; color: var(--text-primary); }
+.course-time { font-size: 13px; font-weight: 700; color: var(--gold); }
+
+.radar-container { display: flex; align-items: center; justify-content: center; padding: 10px 0; }
+
+/* TOAST */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #000; padding: 10px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 700; opacity: 0; pointer-events: none;
+  transform: translateY(10px); transition: all 0.3s; z-index: 999;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">Study<br>Village</div>
+    <div class="logo-sub">Lern &amp; Aufsteigen</div>
+  </div>
+  <div style="padding: 8px 0;">
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">&#9632;</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('sessions')">
+      <span class="nav-icon">&#9632;</span> Lernsessions
+    </div>
+    <div class="nav-item" onclick="showPage('statistics')">
+      <span class="nav-icon">&#9632;</span> Statistiken
+    </div>
+    <div class="nav-item" onclick="showPage('friends')">
+      <span class="nav-icon">&#9632;</span> Freunde
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar" id="sidebarAvatar">DU</div>
+      <div>
+        <div style="font-size:12px;font-weight:600;">Du</div>
+        <div style="font-size:10px;color:var(--gold);" id="sidebarLevel">Level 1</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="dash-header">
+      <div>
+        <div class="dash-title">Dein Dorf</div>
+        <div class="dash-subtitle" id="dashGreet">Willkommen zuruck, Lernkrieger!</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--text-secondary);">Heutige Session</div>
+        <div style="font-size:18px;font-weight:700;color:var(--gold);" id="todayTime">0:00</div>
+      </div>
+    </div>
+    <div class="island-wrapper">
+      <div id="islandDisplay"></div>
+    </div>
+    <div class="level-section">
+      <div class="level-header">
+        <div class="level-name" id="levelName">Level 1</div>
+        <div class="level-badge" id="levelBadge">LV 1</div>
+      </div>
+      <div class="level-detail" id="levelDetail">Noch 2:00 Std. bis Level 2</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-pct" id="progressPct">0%</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="totalHours">0:00</div>
+        <div class="stat-label">Gesamt Std.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="sessionCount">0</div>
+        <div class="stat-label">Sessions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="streakDays">1</div>
+        <div class="stat-label">Streak</div>
+      </div>
+    </div>
+    <button class="dash-btn" onclick="showPage('sessions')">Session starten</button>
+  </div>
+
+  <!-- SESSIONS -->
+  <div class="page" id="page-sessions">
+    <div class="page-title">Lernsessions</div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="showTab('live',this)">Live Tracking</button>
+      <button class="tab-btn" onclick="showTab('past',this)">Vergangen</button>
+    </div>
+    <div class="sub-page active" id="tab-live">
+      <input class="timer-subject" id="timerSubject" placeholder="Fach / Thema eingeben..." />
+      <div class="timer-display">
+        <div class="timer-digits" id="timerDigits">00:00:00</div>
+        <div class="timer-label" id="timerStatus">Bereit zum Lernen</div>
+      </div>
+      <div class="timer-btns">
+        <button class="btn-start" id="btnStart" onclick="startTimer()">Session starten</button>
+        <button class="btn-stop" id="btnStop" onclick="stopTimer()">Beenden &amp; Speichern</button>
+      </div>
+    </div>
+    <div class="sub-page" id="tab-past">
+      <div class="form-group">
+        <label class="form-label">Fach / Thema</label>
+        <input class="form-input" id="pastSubject" placeholder="z.B. Mathematik, Physik..." />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" id="pastDate" type="date" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Stunden</label>
+          <input class="form-input" id="pastHours" type="number" min="0" max="12" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Minuten</label>
+          <input class="form-input" id="pastMins" type="number" min="0" max="59" placeholder="0" />
+        </div>
+      </div>
+      <button class="btn-log" onclick="logPastSession()">Session eintragen</button>
+    </div>
+    <div class="session-list">
+      <div class="session-list-title">Letzte Sessions</div>
+      <div id="sessionLog"></div>
+    </div>
+  </div>
+
+  <!-- STATISTICS -->
+  <div class="page" id="page-statistics">
+    <div class="page-title">Statistiken</div>
+    <div class="stats-grid-top">
+      <div class="stat-big-card">
+        <div class="stat-big-label">Heute</div>
+        <div class="stat-big-value" id="statToday">0h 0m</div>
+        <div class="stat-big-sub"><span class="stat-big-accent" id="statTodayGoal">0h</span> Tagesziel</div>
+        <div class="stat-accent-bar" id="statTodayBar" style="width:0%"></div>
+      </div>
+      <div class="stat-big-card">
+        <div class="stat-big-label">Diese Woche</div>
+        <div class="stat-big-value" id="statWeek">0h 0m</div>
+        <div class="stat-big-sub"><span class="stat-big-accent" id="statWeekGoal">0h</span> Wochenziel</div>
+        <div class="stat-accent-bar" id="statWeekBar" style="width:0%"></div>
+      </div>
+      <div class="stat-big-card">
+        <div class="stat-big-label">Dieser Monat</div>
+        <div class="stat-big-value" id="statMonth">0h 0m</div>
+        <div class="stat-big-sub"><span class="stat-big-accent" id="statMonthSub">Tagesdurchschnitt</span></div>
+        <div class="stat-accent-bar" style="width:60%"></div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Lernzeit — Letzte 7 Tage</div>
+      <div class="line-chart-area">
+        <svg class="line-chart-svg" id="lineChartSvg" viewBox="0 0 500 80" preserveAspectRatio="none"></svg>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;" id="chartLabels"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Wochentage — Lernzeit</div>
+      <div class="week-days" id="weekDaysRow"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Letzte 30 Tage</div>
+      <div class="calendar-grid" id="calGrid"></div>
+    </div>
+
+    <div class="bottom-stats">
+      <div class="course-card">
+        <div class="chart-title">Top Facher (Woche)</div>
+        <div id="topCourses"></div>
+      </div>
+      <div class="course-card">
+        <div class="chart-title">Durchschnitt nach Tag</div>
+        <svg id="radarSvg" viewBox="0 0 180 180" width="180" height="180" style="display:block;margin:auto;"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRIENDS -->
+  <div class="page" id="page-friends">
+    <div class="friends-header">
+      <div class="page-title" style="margin-bottom:0">Freunde &amp; Ranking</div>
+      <button class="btn-add-friend" onclick="toggleAddFriend()">+ Freund hinzufugen</button>
+    </div>
+    <div class="add-friend-modal" id="addFriendModal">
+      <div class="add-modal-title">Freunde verbinden</div>
+      <div class="add-modal-info">Teile deinen Freundescode. Sie geben ihn bei sich ein, um dich hinzuzufugen. Kein Account notig.</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Dein Code:</div>
+      <div class="code-box" onclick="toast('Code kopiert!')">LERN-7842</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Freund-Code eingeben:</div>
+      <div class="add-row">
+        <input class="code-input" id="friendCodeInput" placeholder="z.B. LERN-1234" maxlength="9" />
+        <button class="btn-connect" onclick="addFriend()">Verbinden</button>
+      </div>
+    </div>
+    <div class="ranking-label">Rangliste</div>
+    <div id="friendList"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ====== ISLAND SVGs ======
+// Each level: inline SVG string (pixel-art isometric island)
+const ISLAND_SVGS = {
+  1: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <!-- Water shadow -->
+  <ellipse cx="190" cy="240" rx="140" ry="32" fill="#0B3D52" opacity="0.5"/>
+  <!-- Island base - teal water layer -->
+  <polygon points="190,270 50,200 190,210 330,200" fill="#1BA896"/>
+  <polygon points="50,200 190,130 330,200 190,210" fill="#22C4B0"/>
+  <!-- Grass top -->
+  <polygon points="60,198 190,128 320,198 190,208" fill="#5CB85C"/>
+  <polygon points="70,194 190,134 310,194 190,204" fill="#6CC96C"/>
+  <!-- Dirt path edge -->
+  <polygon points="120,200 190,175 260,200 190,205" fill="#8B7355" opacity="0.4"/>
+  <!-- Single sapling tree -->
+  <rect x="184" y="140" width="5" height="22" fill="#6B4A2A"/>
+  <ellipse cx="186" cy="137" rx="10" ry="8" fill="#3A7A1E"/>
+  <ellipse cx="186" cy="132" rx="7" ry="6" fill="#4A9A2E"/>
+  <!-- Stone border -->
+  <polygon points="60,198 190,128 190,134 70,194" fill="#888" opacity="0.2"/>
+  <polygon points="190,128 320,198 310,194 190,134" fill="#999" opacity="0.15"/>
+  </svg>`,
+
+  2: `<svg viewBox="0 0 380 280" xmlns="" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="245" rx="145" ry="33" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,272 48,202 190,212 332,202" fill="#1BA896"/>
+  <polygon points="48,202 190,128 332,202 190,212" fill="#22C4B0"/>
+  <polygon points="58,200 190,130 322,200 190,210" fill="#5CB85C"/>
+  <polygon points="68,196 190,136 312,196 190,206" fill="#6CC96C"/>
+  <!-- Path -->
+  <polygon points="168,206 190,190 212,206 190,210" fill="#A08860" opacity="0.6"/>
+  <!-- Tree left -->
+  <rect x="145" y="155" width="6" height="28" fill="#6B4A2A"/>
+  <ellipse cx="148" cy="152" rx="13" ry="11" fill="#2D6B1A"/>
+  <ellipse cx="148" cy="147" rx="9" ry="8" fill="#3A8A24"/>
+  <!-- Log cabin -->
+  <rect x="170" y="148" width="40" height="28" fill="#8B6535"/>
+  <rect x="170" y="148" width="40" height="28" fill="none" stroke="#6B4A20" stroke-width="1.5" stroke-dasharray="0 6 40 6"/>
+  <!-- Roof -->
+  <polygon points="166,150 210,150 210,148 190,134 170,148" fill="#6B3A18"/>
+  <polygon points="166,150 190,134 190,136 168,150" fill="#7B4A22"/>
+  <!-- Door -->
+  <rect x="183" y="162" width="14" height="14" fill="#5A3518" rx="1"/>
+  <!-- Window -->
+  <rect x="174" y="155" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  </svg>`,
+
+  3: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="248" rx="148" ry="34" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,274 45,203 190,213 335,203" fill="#1BA896"/>
+  <polygon points="45,203 190,126 335,203 190,213" fill="#22C4B0"/>
+  <polygon points="55,201 190,128 325,201 190,211" fill="#5CB85C"/>
+  <polygon points="65,197 190,134 315,197 190,207" fill="#6CC96C"/>
+  <!-- Dock left -->
+  <rect x="50" y="208" width="50" height="6" fill="#7B5A30"/>
+  <rect x="52" y="210" width="4" height="14" fill="#6B4A20"/>
+  <rect x="68" y="210" width="4" height="14" fill="#6B4A20"/>
+  <rect x="84" y="210" width="4" height="14" fill="#6B4A20"/>
+  <!-- Boat -->
+  <ellipse cx="72" cy="228" rx="18" ry="6" fill="#C8E8FF"/>
+  <polygon points="54,228 90,228 86,232 58,232" fill="#4A88CC"/>
+  <!-- Cabin -->
+  <rect x="160" y="142" width="50" height="34" fill="#9B7545"/>
+  <rect x="158" y="140" width="54" height="36" fill="none" stroke="#7B5525" stroke-width="1" stroke-dasharray="0 8 54 8"/>
+  <polygon points="155,145 215,145 215,142 185,124 155,142" fill="#7B4520"/>
+  <polygon points="155,145 185,124 185,127 158,145" fill="#8B5530"/>
+  <!-- Chimney -->
+  <rect x="198" y="124" width="7" height="12" fill="#888"/>
+  <rect x="196" y="122" width="11" height="5" fill="#777"/>
+  <!-- Door -->
+  <rect x="178" y="158" width="14" height="18" fill="#5A3518" rx="1"/>
+  <!-- Windows -->
+  <rect x="163" y="150" width="10" height="9" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="200" y="150" width="10" height="9" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Tree right -->
+  <rect x="226" y="152" width="6" height="26" fill="#6B4A2A"/>
+  <ellipse cx="229" cy="149" rx="14" ry="12" fill="#2D6B1A"/>
+  <ellipse cx="229" cy="144" rx="10" ry="9" fill="#3A8A24"/>
+  </svg>`,
+
+  4: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="250" rx="152" ry="35" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,276 42,204 190,214 338,204" fill="#1BA896"/>
+  <polygon points="42,204 190,123 338,204 190,214" fill="#22C4B0"/>
+  <polygon points="52,202 190,125 328,202 190,212" fill="#4EA84E"/>
+  <polygon points="62,198 190,131 318,198 190,208" fill="#5EC85E"/>
+  <!-- Dock -->
+  <rect x="44" y="210" width="60" height="7" fill="#7B5A30"/>
+  <rect x="46" y="213" width="4" height="16" fill="#6B4A20"/>
+  <rect x="62" y="213" width="4" height="16" fill="#6B4A20"/>
+  <rect x="78" y="213" width="4" height="16" fill="#6B4A20"/>
+  <rect x="94" y="213" width="4" height="16" fill="#6B4A20"/>
+  <!-- Boat -->
+  <ellipse cx="70" cy="232" rx="20" ry="7" fill="#D0ECFF"/>
+  <polygon points="50,232 90,232 86,237 54,237" fill="#3A78BC"/>
+  <rect x="65" y="220" width="3" height="16" fill="#888"/>
+  <polygon points="68,220 68,230 80,225" fill="#EEE"/>
+  <!-- Palm trees -->
+  <rect x="105" y="148" width="5" height="35" fill="#8B6520" transform="rotate(-8,107,183)"/>
+  <ellipse cx="103" cy="145" rx="16" ry="10" fill="#2E7A14" transform="rotate(-8,103,145)"/>
+  <ellipse cx="110" cy="140" rx="12" ry="8" fill="#3A9A1E" transform="rotate(5,110,140)"/>
+  <rect x="255" y="145" width="5" height="38" fill="#8B6520" transform="rotate(6,257,183)"/>
+  <ellipse cx="259" cy="142" rx="16" ry="10" fill="#2E7A14" transform="rotate(8,259,142)"/>
+  <ellipse cx="252" cy="137" rx="12" ry="8" fill="#3A9A1E" transform="rotate(-5,252,137)"/>
+  <!-- Two houses -->
+  <rect x="148" y="148" width="38" height="30" fill="#A08050"/>
+  <polygon points="145,152 190,152 190,148 168,132 145,148" fill="#7B4520"/>
+  <rect x="192" y="152" width="36" height="28" fill="#C09860"/>
+  <polygon points="190,155 230,155 230,152 210,138 190,152" fill="#8B5530"/>
+  <rect x="163" y="162" width="12" height="16" fill="#5A3518" rx="1"/>
+  <rect x="200" y="162" width="10" height="14" fill="#5A3518" rx="1"/>
+  <!-- Table/bench -->
+  <rect x="178" y="178" width="24" height="4" fill="#C8A060"/>
+  <rect x="180" y="182" width="4" height="6" fill="#A07840"/>
+  <rect x="198" y="182" width="4" height="6" fill="#A07840"/>
+  </svg>`,
+
+  5: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="252" rx="155" ry="36" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,278 40,205 190,215 340,205" fill="#1BA896"/>
+  <polygon points="40,205 190,121 340,205 190,215" fill="#22C4B0"/>
+  <polygon points="50,203 190,123 330,203 190,213" fill="#4A9A4A"/>
+  <polygon points="60,199 190,129 320,199 190,209" fill="#58B858"/>
+  <!-- Dock -->
+  <rect x="40" y="211" width="68" height="7" fill="#7B5A30"/>
+  <rect x="43" y="214" width="4" height="18" fill="#6B4A20"/>
+  <rect x="62" y="214" width="4" height="18" fill="#6B4A20"/>
+  <rect x="81" y="214" width="4" height="18" fill="#6B4A20"/>
+  <rect x="100" y="214" width="4" height="18" fill="#6B4A20"/>
+  <!-- Boat small -->
+  <ellipse cx="68" cy="235" rx="22" ry="7" fill="#D8F0FF"/>
+  <polygon points="46,235 90,235 86,240 50,240" fill="#3868AC"/>
+  <!-- Stone castle/manor left -->
+  <rect x="72" y="148" width="52" height="40" fill="#B0A090"/>
+  <rect x="70" y="145" width="56" height="8" fill="#909080"/>
+  <rect x="68" y="136" width="18" height="20" fill="#B0A090"/>
+  <rect x="102" y="136" width="18" height="20" fill="#B0A090"/>
+  <polygon points="66,140 90,140 78,124" fill="#888070"/>
+  <polygon points="100,140 122,140 110,124" fill="#888070"/>
+  <rect x="85" y="168" width="12" height="20" fill="#6A5040" rx="1"/>
+  <rect x="74" y="155" width="9" height="8" fill="#AADDF0" opacity="0.6" rx="1"/>
+  <rect x="104" y="155" width="9" height="8" fill="#AADDF0" opacity="0.6" rx="1"/>
+  <!-- Main house center/right -->
+  <rect x="178" y="143" width="54" height="38" fill="#C09860"/>
+  <polygon points="175,148 236,148 236,144 205,126 175,144" fill="#8B5025"/>
+  <rect x="191" y="163" width="14" height="18" fill="#5A3518" rx="1"/>
+  <rect x="180" y="153" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="215" y="153" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Garden/crops -->
+  <rect x="130" y="190" width="50" height="12" fill="#3A6A18" rx="2"/>
+  <rect x="132" y="191" width="8" height="10" fill="#4A8A24"/>
+  <rect x="144" y="191" width="8" height="10" fill="#4A8A24"/>
+  <rect x="156" y="191" width="8" height="10" fill="#4A8A24"/>
+  <rect x="168" y="191" width="8" height="10" fill="#4A8A24"/>
+  <!-- Palm trees -->
+  <rect x="244" y="140" width="5" height="42" fill="#8B6520" transform="rotate(5,246,182)"/>
+  <ellipse cx="248" cy="137" rx="17" ry="11" fill="#2E7A14" transform="rotate(8,248,137)"/>
+  <ellipse cx="240" cy="132" rx="13" ry="9" fill="#3A9A1E" transform="rotate(-6,240,132)"/>
+  <!-- Market stall -->
+  <rect x="238" y="168" width="36" height="22" fill="#D8B070"/>
+  <rect x="235" y="165" width="42" height="6" fill="#E84848"/>
+  <rect x="239" y="171" width="10" height="8" fill="#AADDFF" opacity="0.5" rx="1"/>
+  </svg>`,
+
+  6: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="254" rx="158" ry="37" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,280 38,206 190,216 342,206" fill="#1BA896"/>
+  <polygon points="38,206 190,119 342,206 190,216" fill="#22C4B0"/>
+  <polygon points="48,204 190,121 332,204 190,214" fill="#4A9A4A"/>
+  <polygon points="58,200 190,127 322,200 190,210" fill="#58B858"/>
+  <!-- Extended dock -->
+  <rect x="38" y="212" width="80" height="8" fill="#7B5A30"/>
+  <rect x="40" y="215" width="5" height="22" fill="#6B4A20"/>
+  <rect x="60" y="215" width="5" height="22" fill="#6B4A20"/>
+  <rect x="80" y="215" width="5" height="22" fill="#6B4A20"/>
+  <rect x="100" y="215" width="5" height="22" fill="#6B4A20"/>
+  <!-- Sailboat -->
+  <ellipse cx="70" cy="238" rx="24" ry="8" fill="#E8F8FF"/>
+  <polygon points="46,238 94,238 90,244 50,244" fill="#2858A0"/>
+  <rect x="66" y="218" width="3" height="22" fill="#999"/>
+  <polygon points="69,218 69,232 84,225" fill="#F8F8EE"/>
+  <polygon points="69,218 69,228 58,223" fill="#EEE8E8"/>
+  <!-- Rowboat nearby -->
+  <ellipse cx="110" cy="238" rx="14" ry="5" fill="#D0A060"/>
+  <polygon points="96,238 124,238 122,242 98,242" fill="#A07030"/>
+  <!-- Lighthouse! -->
+  <rect x="54" y="148" width="22" height="52" fill="#CC8050"/>
+  <!-- lighthouse stripes -->
+  <rect x="54" y="158" width="22" height="7" fill="#EEE"/>
+  <rect x="54" y="172" width="22" height="7" fill="#EEE"/>
+  <rect x="54" y="186" width="22" height="7" fill="#EEE"/>
+  <!-- lighthouse top -->
+  <rect x="52" y="142" width="26" height="10" fill="#888"/>
+  <rect x="56" y="134" width="18" height="12" fill="#FFE860" opacity="0.9"/>
+  <ellipse cx="65" cy="134" rx="12" ry="5" fill="#888"/>
+  <polygon points="58,128 72,128 65,118" fill="#CC3030"/>
+  <!-- Main buildings cluster -->
+  <rect x="128" y="145" width="44" height="36" fill="#B09060"/>
+  <polygon points="125,149 175,149 175,146 150,129 125,146" fill="#7A4818"/>
+  <rect x="138" y="162" width="13" height="19" fill="#5A3518" rx="1"/>
+  <rect x="129" y="154" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="157" y="154" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Second building -->
+  <rect x="185" y="150" width="48" height="34" fill="#C0A070"/>
+  <polygon points="182,154 236,154 236,151 210,134 182,151" fill="#8B5025"/>
+  <rect x="197" y="166" width="14" height="18" fill="#5A3518" rx="1"/>
+  <rect x="187" y="157" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="218" y="157" width="9" height="8" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Chimney -->
+  <rect x="218" y="126" width="7" height="14" fill="#888"/>
+  <rect x="216" y="124" width="11" height="5" fill="#777"/>
+  <!-- Palm trees -->
+  <rect x="248" y="140" width="5" height="42" fill="#8B6520" transform="rotate(6,250,182)"/>
+  <ellipse cx="252" cy="137" rx="18" ry="11" fill="#2E7A14"/>
+  <ellipse cx="244" cy="132" rx="14" ry="9" fill="#3A9A1E"/>
+  <rect x="272" y="148" width="5" height="38" fill="#8B6520" transform="rotate(-4,274,186)"/>
+  <ellipse cx="270" cy="145" rx="15" ry="10" fill="#2E7A14"/>
+  <ellipse cx="278" cy="140" rx="12" ry="8" fill="#3A9A1E"/>
+  <!-- Market awning -->
+  <rect x="240" y="168" width="42" height="24" fill="#D0A868"/>
+  <rect x="237" y="165" width="48" height="7" fill="#48AA48" opacity="0.9"/>
+  <!-- Crates -->
+  <rect x="116" y="192" width="12" height="10" fill="#A07838" rx="1"/>
+  <rect x="130" y="192" width="12" height="10" fill="#A07838" rx="1"/>
+  </svg>`,
+
+  7: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="256" rx="162" ry="38" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,282 36,207 190,217 344,207" fill="#158888"/>
+  <polygon points="36,207 190,117 344,207 190,217" fill="#18A8A0"/>
+  <polygon points="46,205 190,119 334,205 190,215" fill="#459845"/>
+  <polygon points="56,201 190,125 324,201 190,211" fill="#52B052"/>
+  <!-- Extended dock + bridge -->
+  <rect x="36" y="213" width="88" height="8" fill="#7B5A30"/>
+  <rect x="38" y="216" width="5" height="24" fill="#6B4A20"/>
+  <rect x="58" y="216" width="5" height="24" fill="#6B4A20"/>
+  <rect x="78" y="216" width="5" height="24" fill="#6B4A20"/>
+  <rect x="98" y="216" width="5" height="24" fill="#6B4A20"/>
+  <rect x="118" y="216" width="5" height="24" fill="#6B4A20"/>
+  <!-- Bridge arch over water channel -->
+  <path d="M90 208 Q120 195 150 208" fill="none" stroke="#A08050" stroke-width="8"/>
+  <!-- Multiple boats -->
+  <ellipse cx="58" cy="242" rx="20" ry="6" fill="#E0F0FF"/>
+  <polygon points="38,242 78,242 74,247 42,247" fill="#2858A0"/>
+  <rect x="54" y="228" width="3" height="16" fill="#999"/>
+  <polygon points="57,228 57,240 70,234" fill="#F8F8EE"/>
+  <ellipse cx="110" cy="242" rx="16" ry="5" fill="#D0A060"/>
+  <polygon points="94,242 126,242 124,246 96,246" fill="#A07030"/>
+  <!-- Lighthouse tower -->
+  <rect x="50" y="143" width="24" height="58" fill="#CC8050"/>
+  <rect x="50" y="153" width="24" height="8" fill="#EEE"/>
+  <rect x="50" y="168" width="24" height="8" fill="#EEE"/>
+  <rect x="50" y="183" width="24" height="8" fill="#EEE"/>
+  <rect x="48" y="138" width="28" height="9" fill="#888"/>
+  <rect x="52" y="130" width="20" height="12" fill="#FFE860" opacity="0.9"/>
+  <ellipse cx="62" cy="130" rx="13" ry="5" fill="#888"/>
+  <polygon points="55,124 69,124 62,113" fill="#CC3030"/>
+  <!-- Lamp glow -->
+  <ellipse cx="62" cy="130" rx="16" ry="10" fill="#FFE860" opacity="0.15"/>
+  <!-- Main large tavern/hall -->
+  <rect x="118" y="138" width="70" height="48" fill="#B09060"/>
+  <polygon points="115,143 192,143 192,140 152,118 115,140" fill="#7A4818"/>
+  <polygon points="115,143 152,118 152,121 118,143" fill="#8B5525"/>
+  <rect x="143" y="168" width="16" height="18" fill="#5A3518" rx="1"/>
+  <rect x="120" y="150" width="11" height="10" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="168" y="150" width="11" height="10" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Market building right -->
+  <rect x="200" y="148" width="52" height="38" fill="#C8A870"/>
+  <polygon points="198,152 255,152 255,149 226,132 198,149" fill="#8B5025"/>
+  <rect x="210" y="164" width="15" height="22" fill="#5A3518" rx="1"/>
+  <rect x="200" y="157" width="9" height="9" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="238" y="157" width="9" height="9" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Striped awning -->
+  <rect x="196" y="164" width="60" height="7" fill="#E83838" opacity="0.85"/>
+  <!-- Palm trees pair -->
+  <rect x="268" y="138" width="5" height="50" fill="#8B6520" transform="rotate(7,270,188)"/>
+  <ellipse cx="274" cy="135" rx="19" ry="12" fill="#2E7A14"/>
+  <ellipse cx="264" cy="129" rx="15" ry="10" fill="#3A9A1E"/>
+  <rect x="292" y="145" width="5" height="44" fill="#8B6520" transform="rotate(-5,294,189)"/>
+  <ellipse cx="290" cy="142" rx="17" ry="11" fill="#2E7A14"/>
+  <ellipse cx="300" cy="137" rx="13" ry="9" fill="#3A9A1E"/>
+  <!-- Small structures -->
+  <rect x="84" y="178" width="28" height="20" fill="#A07838" rx="1"/>
+  <polygon points="82,180 114,180 98,168" fill="#7A5828"/>
+  <!-- Crates/barrels -->
+  <rect x="88" y="192" width="10" height="8" fill="#8B6520" rx="1"/>
+  <rect x="100" y="192" width="10" height="8" fill="#8B6520" rx="1"/>
+  </svg>`,
+
+  8: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="258" rx="165" ry="39" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,284 34,208 190,218 346,208" fill="#128080"/>
+  <polygon points="34,208 190,115 346,208 190,218" fill="#159898"/>
+  <polygon points="44,206 190,117 336,206 190,216" fill="#429842"/>
+  <polygon points="54,202 190,123 326,202 190,212" fill="#50AA50"/>
+  <!-- Longer dock with more piers -->
+  <rect x="34" y="214" width="100" height="8" fill="#7B5A30"/>
+  <rect x="36" y="217" width="5" height="26" fill="#6B4A20"/>
+  <rect x="56" y="217" width="5" height="26" fill="#6B4A20"/>
+  <rect x="76" y="217" width="5" height="26" fill="#6B4A20"/>
+  <rect x="96" y="217" width="5" height="26" fill="#6B4A20"/>
+  <rect x="116" y="217" width="5" height="26" fill="#6B4A20"/>
+  <rect x="130" y="217" width="5" height="26" fill="#6B4A20"/>
+  <!-- Sailboat -->
+  <ellipse cx="60" cy="245" rx="24" ry="8" fill="#E8F8FF"/>
+  <polygon points="36,245 84,245 80,251 40,251" fill="#2858A0"/>
+  <rect x="56" y="225" width="3" height="22" fill="#999"/>
+  <polygon points="59,225 59,239 74,232" fill="#F8F8EE"/>
+  <polygon points="59,225 59,236 48,230" fill="#EEE"/>
+  <!-- Rowboat -->
+  <ellipse cx="112" cy="245" rx="18" ry="6" fill="#D0A060"/>
+  <polygon points="94,245 130,245 128,250 96,250" fill="#A07030"/>
+  <!-- Stone steps from water -->
+  <rect x="148" y="208" width="80" height="6" fill="#9A8870" rx="1"/>
+  <rect x="154" y="203" width="70" height="6" fill="#A89880" rx="1"/>
+  <rect x="160" y="198" width="60" height="6" fill="#B8A890" rx="1"/>
+  <!-- Street lamps -->
+  <rect x="158" y="175" width="3" height="25" fill="#888"/>
+  <ellipse cx="159" cy="174" rx="4" ry="3" fill="#FFE860" opacity="0.8"/>
+  <rect x="216" y="175" width="3" height="25" fill="#888"/>
+  <ellipse cx="217" cy="174" rx="4" ry="3" fill="#FFE860" opacity="0.8"/>
+  <!-- Main villa/mansion -->
+  <rect x="152" y="138" width="76" height="50" fill="#C8A870"/>
+  <rect x="150" y="136" width="80" height="6" fill="#A88050"/>
+  <polygon points="148,141 232,141 232,138 190,118 148,138" fill="#8B5025"/>
+  <polygon points="148,141 190,118 190,121 150,141" fill="#9B6030"/>
+  <rect x="178" y="165" width="16" height="23" fill="#5A3518" rx="1"/>
+  <rect x="155" y="148" width="12" height="11" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="213" y="148" width="12" height="11" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="155" y="163" width="12" height="11" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="213" y="163" width="12" height="11" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Market/shop right -->
+  <rect x="238" y="150" width="50" height="38" fill="#D0B880"/>
+  <polygon points="236,154 290,154 290,151 263,135 236,151" fill="#8B5825"/>
+  <rect x="236" y="160" width="54" height="8" fill="#E84848" opacity="0.85"/>
+  <rect x="249" y="167" width="14" height="21" fill="#5A3518" rx="1"/>
+  <rect x="239" y="158" width="9" height="9" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <rect x="272" y="158" width="9" height="9" fill="#AADDFF" opacity="0.6" rx="1"/>
+  <!-- Shop sign -->
+  <rect x="248" y="148" width="30" height="8" fill="#F0D090" rx="1"/>
+  <!-- Palm trees -->
+  <rect x="96" y="138" width="5" height="46" fill="#8B6520" transform="rotate(-8,98,184)"/>
+  <ellipse cx="94" cy="135" rx="19" ry="12" fill="#2E7A14" transform="rotate(-8,94,135)"/>
+  <ellipse cx="104" cy="129" rx="15" ry="10" fill="#3A9A1E"/>
+  <rect x="300" y="142" width="5" height="44" fill="#8B6520" transform="rotate(6,302,186)"/>
+  <ellipse cx="306" cy="139" rx="19" ry="12" fill="#2E7A14"/>
+  <ellipse cx="298" cy="133" rx="15" ry="10" fill="#3A9A1E"/>
+  <!-- Stone garden wall -->
+  <rect x="134" y="192" width="14" height="14" fill="#9A8870" rx="2"/>
+  <rect x="230" y="192" width="14" height="14" fill="#9A8870" rx="2"/>
+  <ellipse cx="141" cy="192" rx="7" ry="7" fill="#4A9A24"/>
+  <ellipse cx="237" cy="192" rx="7" ry="7" fill="#4A9A24"/>
+  </svg>`,
+
+  9: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="260" rx="168" ry="40" fill="#0B3D52" opacity="0.5"/>
+  <polygon points="190,286 32,209 190,219 348,209" fill="#0E7070"/>
+  <polygon points="32,209 190,113 348,209 190,219" fill="#109898"/>
+  <polygon points="42,207 190,115 338,207 190,217" fill="#3A8A3A"/>
+  <polygon points="52,203 190,121 328,203 190,213" fill="#48A048"/>
+  <!-- Wide dock + waterfront -->
+  <rect x="32" y="215" width="108" height="9" fill="#7B5A30"/>
+  <rect x="34" y="219" width="5" height="28" fill="#6B4A20"/>
+  <rect x="56" y="219" width="5" height="28" fill="#6B4A20"/>
+  <rect x="78" y="219" width="5" height="28" fill="#6B4A20"/>
+  <rect x="100" y="219" width="5" height="28" fill="#6B4A20"/>
+  <rect x="122" y="219" width="5" height="28" fill="#6B4A20"/>
+  <rect x="136" y="219" width="5" height="28" fill="#6B4A20"/>
+  <!-- Boats -->
+  <ellipse cx="58" cy="248" rx="24" ry="8" fill="#E8F8FF"/>
+  <polygon points="34,248 82,248 78,254 38,254" fill="#2858A0"/>
+  <rect x="54" y="228" width="3" height="22" fill="#999"/>
+  <polygon points="57,228 57,242 72,235" fill="#F8F8EE"/>
+  <ellipse cx="110" cy="248" rx="18" ry="6" fill="#D0A060"/>
+  <polygon points="92,248 128,248 126,253 94,253" fill="#A07030"/>
+  <!-- Modern buildings - tall structures -->
+  <!-- Left brick office -->
+  <rect x="44" y="118" width="62" height="92" fill="#C8785A"/>
+  <rect x="44" y="118" width="62" height="92" fill="none" stroke="#A85A3A" stroke-width="2"/>
+  <!-- windows grid -->
+  <rect x="48" y="122" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="64" y="122" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="80" y="122" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="96" y="122" width="6" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="48" y="135" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="64" y="135" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="80" y="135" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="96" y="135" width="6" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="48" y="148" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="64" y="148" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="80" y="148" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="48" y="161" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="64" y="161" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="80" y="161" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="48" y="174" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="64" y="174" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="80" y="174" width="12" height="9" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <!-- Mid glass office tower -->
+  <rect x="122" y="130" width="56" height="80" fill="#88A8C8"/>
+  <rect x="122" y="130" width="56" height="80" fill="none" stroke="#6888A8" stroke-width="2"/>
+  <rect x="126" y="134" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="144" y="134" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="162" y="134" width="12" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="126" y="148" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="144" y="148" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="162" y="148" width="12" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="126" y="162" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="144" y="162" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="162" y="162" width="12" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="126" y="176" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="144" y="176" width="14" height="10" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <!-- Helicopter pad on top -->
+  <rect x="134" y="125" width="32" height="8" fill="#666"/>
+  <circle cx="150" cy="129" r="8" fill="none" stroke="#F5C842" stroke-width="1.5"/>
+  <text x="147" y="132" font-size="8" fill="#F5C842" font-family="monospace">H</text>
+  <!-- Tall brick building right -->
+  <rect x="196" y="108" width="72" height="102" fill="#D09870"/>
+  <rect x="196" y="108" width="72" height="102" fill="none" stroke="#B07850" stroke-width="2"/>
+  <rect x="200" y="112" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="218" y="112" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="236" y="112" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="254" y="112" width="10" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="200" y="126" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="218" y="126" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="236" y="126" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="254" y="126" width="10" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="200" y="140" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="218" y="140" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="236" y="140" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="200" y="154" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="218" y="154" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="236" y="154" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="200" y="168" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="218" y="168" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <rect x="236" y="168" width="14" height="10" fill="#B8D8F0" opacity="0.7" rx="1"/>
+  <!-- Road/crosswalk -->
+  <rect x="106" y="204" width="90" height="10" fill="#505050"/>
+  <rect x="115" y="204" width="6" height="4" fill="#EEE" opacity="0.7"/>
+  <rect x="127" y="204" width="6" height="4" fill="#EEE" opacity="0.7"/>
+  <rect x="139" y="204" width="6" height="4" fill="#EEE" opacity="0.7"/>
+  <rect x="151" y="204" width="6" height="4" fill="#EEE" opacity="0.7"/>
+  <rect x="163" y="204" width="6" height="4" fill="#EEE" opacity="0.7"/>
+  <rect x="175" y="204" width="6" height="4" fill="#EEE" opacity="0.7"/>
+  <!-- Cars -->
+  <rect x="118" y="197" width="20" height="8" fill="#CC4444" rx="2"/>
+  <rect x="152" y="197" width="20" height="8" fill="#4444CC" rx="2"/>
+  <!-- Trees on street -->
+  <circle cx="108" cy="200" r="6" fill="#3A8A24"/>
+  <rect x="106" y="200" width="4" height="8" fill="#6B4A2A"/>
+  <!-- Shop front bottom right -->
+  <rect x="286" y="168" width="54" height="42" fill="#D8C8A0"/>
+  <rect x="283" y="162" width="60" height="10" fill="#3888C8"/>
+  <rect x="295" y="174" width="16" height="18" fill="#A8D8FF" opacity="0.7" rx="1"/>
+  <rect x="316" y="174" width="16" height="18" fill="#A8D8FF" opacity="0.7" rx="1"/>
+  </svg>`,
+
+  10: `<svg viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px;width:100%;height:auto;">
+  <ellipse cx="190" cy="262" rx="172" ry="42" fill="#0A2A3A" opacity="0.6"/>
+  <polygon points="190,288 30,210 190,220 350,210" fill="#0A6060"/>
+  <polygon points="30,210 190,110 350,210 190,220" fill="#0E9090"/>
+  <polygon points="40,208 190,112 340,208 190,218" fill="#388838"/>
+  <polygon points="50,204 190,118 330,204 190,214" fill="#489848"/>
+  <!-- Mega dock + harbor -->
+  <rect x="30" y="216" width="120" height="10" fill="#7B5A30"/>
+  <rect x="32" y="220" width="6" height="30" fill="#5B3A10"/>
+  <rect x="55" y="220" width="6" height="30" fill="#5B3A10"/>
+  <rect x="78" y="220" width="6" height="30" fill="#5B3A10"/>
+  <rect x="101" y="220" width="6" height="30" fill="#5B3A10"/>
+  <rect x="124" y="220" width="6" height="30" fill="#5B3A10"/>
+  <rect x="144" y="220" width="6" height="30" fill="#5B3A10"/>
+  <!-- Harbor boats + yacht -->
+  <ellipse cx="60" cy="252" rx="26" ry="9" fill="#E8F8FF"/>
+  <polygon points="34,252 86,252 82,259 38,259" fill="#1848A0"/>
+  <rect x="56" y="230" width="3" height="24" fill="#999"/>
+  <polygon points="59,230 59,244 76,237" fill="#F8F8EE"/>
+  <polygon points="59,230 59,241 46,235" fill="#EEE"/>
+  <ellipse cx="115" cy="252" rx="20" ry="7" fill="#D0A060"/>
+  <polygon points="95,252 135,252 133,257 97,257" fill="#A07030"/>
+  <!-- Satellite dish -->
+  <rect x="316" y="146" width="3" height="16" fill="#888"/>
+  <ellipse cx="314" cy="147" rx="10" ry="6" fill="none" stroke="#AAA" stroke-width="2" transform="rotate(-30,314,147)"/>
+  <!-- Road network -->
+  <rect x="44" y="206" width="292" height="10" fill="#444"/>
+  <rect x="55" y="206" width="8" height="4" fill="#EEE" opacity="0.6"/>
+  <rect x="75" y="206" width="8" height="4" fill="#EEE" opacity="0.6"/>
+  <rect x="95" y="206" width="8" height="4" fill="#EEE" opacity="0.6"/>
+  <rect x="165" y="206" width="8" height="4" fill="#EEE" opacity="0.6"/>
+  <rect x="185" y="206" width="8" height="4" fill="#EEE" opacity="0.6"/>
+  <!-- Tall skyscraper left -->
+  <rect x="36" y="108" width="70" height="102" fill="#C87860"/>
+  <rect x="36" y="108" width="70" height="102" fill="none" stroke="#A05840" stroke-width="2"/>
+  <rect x="40" y="112" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="57" y="112" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="74" y="112" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="91" y="112" width="11" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="40" y="125" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="57" y="125" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="74" y="125" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="91" y="125" width="11" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="40" y="138" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="57" y="138" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="74" y="138" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="40" y="151" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="57" y="151" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="74" y="151" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="40" y="164" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="57" y="164" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="74" y="164" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="40" y="177" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="57" y="177" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <rect x="74" y="177" width="13" height="9" fill="#B8D0E8" opacity="0.75" rx="1"/>
+  <!-- Antenna on top -->
+  <rect x="69" y="100" width="3" height="12" fill="#888"/>
+  <rect x="64" y="98" width="13" height="4" fill="#777"/>
+  <!-- Cable car station -->
+  <rect x="120" y="166" width="36" height="28" fill="#808898"/>
+  <polygon points="118,170 158,170 158,167 138,155 118,167" fill="#606878"/>
+  <!-- Cable car wires -->
+  <line x1="138" y1="158" x2="310" y2="138" stroke="#888" stroke-width="1.5"/>
+  <!-- Cable car box -->
+  <rect x="210" y="148" width="20" height="12" fill="#A8B0C0" rx="2"/>
+  <rect x="213" y="151" width="14" height="8" fill="#C8D8E8" opacity="0.7" rx="1"/>
+  <!-- Central tall glass tower -->
+  <rect x="168" y="96" width="80" height="114" fill="#7898B8"/>
+  <rect x="168" y="96" width="80" height="114" fill="none" stroke="#5878A0" stroke-width="2"/>
+  <rect x="172" y="100" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="192" y="100" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="212" y="100" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="232" y="100" width="12" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="172" y="115" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="192" y="115" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="212" y="115" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="232" y="115" width="12" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="172" y="130" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="192" y="130" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="212" y="130" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="172" y="145" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="192" y="145" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="212" y="145" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="172" y="160" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="192" y="160" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <rect x="212" y="160" width="16" height="11" fill="#D8F0FF" opacity="0.8" rx="1"/>
+  <!-- Helipad on glass tower -->
+  <rect x="176" y="88" width="64" height="10" fill="#555"/>
+  <circle cx="208" cy="93" r="12" fill="none" stroke="#F5C842" stroke-width="2"/>
+  <text x="204" y="97" font-size="10" fill="#F5C842" font-family="monospace">H</text>
+  <!-- Helicopter -->
+  <rect x="198" y="82" width="22" height="7" fill="#CC4444" rx="2"/>
+  <rect x="188" y="83" width="38" height="4" fill="none" stroke="#AAA" stroke-width="1" rx="2"/>
+  <line x1="208" y1="82" x2="208" y2="77" stroke="#888" stroke-width="1.5"/>
+  <ellipse cx="208" cy="77" rx="14" ry="2" fill="none" stroke="#CCC" stroke-width="1"/>
+  <!-- Right building with solar -->
+  <rect x="264" y="120" width="78" height="90" fill="#B0C0D0"/>
+  <rect x="264" y="120" width="78" height="90" fill="none" stroke="#90A0B0" stroke-width="2"/>
+  <!-- Solar panels on top -->
+  <rect x="266" y="113" width="74" height="10" fill="#2244AA" rx="1"/>
+  <line x1="278" y1="113" x2="278" y2="123" stroke="#1133AA" stroke-width="1"/>
+  <line x1="290" y1="113" x2="290" y2="123" stroke="#1133AA" stroke-width="1"/>
+  <line x1="302" y1="113" x2="302" y2="123" stroke="#1133AA" stroke-width="1"/>
+  <line x1="314" y1="113" x2="314" y2="123" stroke="#1133AA" stroke-width="1"/>
+  <line x1="326" y1="113" x2="326" y2="123" stroke="#1133AA" stroke-width="1"/>
+  <rect x="268" y="124" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="286" y="124" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="304" y="124" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="322" y="124" width="16" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="268" y="138" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="286" y="138" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="304" y="138" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="322" y="138" width="16" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="268" y="152" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="286" y="152" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="304" y="152" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="268" y="166" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="286" y="166" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <rect x="304" y="166" width="14" height="10" fill="#C8D8E8" opacity="0.75" rx="1"/>
+  <!-- Street trees -->
+  <circle cx="150" cy="202" r="8" fill="#3A8A24"/>
+  <rect x="148" y="202" width="4" height="10" fill="#6B4A2A"/>
+  <circle cx="164" cy="202" r="7" fill="#4A9A34"/>
+  <rect x="162" y="202" width="4" height="10" fill="#6B4A2A"/>
+  <!-- Cars on road -->
+  <rect x="78" y="198" width="22" height="9" fill="#CC4444" rx="2"/>
+  <rect x="118" y="198" width="22" height="9" fill="#4444DD" rx="2"/>
+  <rect x="218" y="198" width="22" height="9" fill="#44AACC" rx="2"/>
+  </svg>`
+};
+
+// ====== LEVEL CONFIG ======
+const LEVELS = [
+  { lv:1,  name:"Leere Insel",          mins:0,     next:120   },
+  { lv:2,  name:"Holzhutte",            mins:120,   next:300   },
+  { lv:3,  name:"Kleines Dorf",         mins:300,   next:540   },
+  { lv:4,  name:"Tropisches Dorf",      mins:540,   next:900   },
+  { lv:5,  name:"Handlergemeinschaft",  mins:900,   next:1380  },
+  { lv:6,  name:"Leuchtturm-Hafen",     mins:1380,  next:2100  },
+  { lv:7,  name:"Grosse Hafenstadt",    mins:2100,  next:3300  },
+  { lv:8,  name:"Residenzstadt",        mins:3300,  next:5100  },
+  { lv:9,  name:"Moderne Metropole",    mins:5100,  next:7800  },
+  { lv:10, name:"Megacity",             mins:7800,  next:Infinity },
+];
+
+// ====== STATE ======
+let state = {
+  totalMins: 0,
+  sessions: [],
+  friends: [
+    { name:"Leon K.",   avatar:"LK", color:"#2ECC71", online:true,  mins:280, lastSeen:"Lernt gerade" },
+    { name:"Sophie M.", avatar:"SM", color:"#5DADE2", online:false, mins:195, lastSeen:"vor 2 Std."   },
+    { name:"Noah R.",   avatar:"NR", color:"#8E44AD", online:false, mins:90,  lastSeen:"gestern"      },
+  ]
+};
+let timerInterval=null, timerSeconds=0, timerRunning=false, timerStart=null;
+
+function getLevel(mins) {
+  for(let i=LEVELS.length-1;i>=0;i--) if(mins>=LEVELS[i].mins) return LEVELS[i];
+  return LEVELS[0];
+}
+function fmtMins(m) {
+  const h=Math.floor(m/60),mn=Math.round(m%60);
+  return h>0?`${h}:${mn.toString().padStart(2,'0')} Std.`:`${mn} Min.`;
+}
+function fmtHHMM(m) {
+  const h=Math.floor(m/60),mn=Math.round(m%60);
+  return `${h}:${mn.toString().padStart(2,'0')}`;
+}
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+// ====== PAGES ======
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const idx=['dashboard','sessions','statistics','friends'].indexOf(page);
+  document.querySelectorAll('.nav-item')[idx].classList.add('active');
+  if(page==='dashboard') updateDashboard();
+  if(page==='friends') renderFriends();
+  if(page==='statistics') renderStatistics();
+}
+
+function showTab(tab, btn) {
+  document.querySelectorAll('.sub-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ====== DASHBOARD ======
+function updateDashboard() {
+  const lv=getLevel(state.totalMins);
+  const nextLv=LEVELS[lv.lv]||null;
+  const progress=nextLv?Math.min(100,((state.totalMins-lv.mins)/(nextLv.mins-lv.mins))*100):100;
+  document.getElementById('levelName').textContent=`Level ${lv.lv} – ${lv.name}`;
+  document.getElementById('levelBadge').textContent=`LV ${lv.lv}`;
+  document.getElementById('sidebarLevel').textContent=`Level ${lv.lv}`;
+  if(nextLv) {
+    const rem=nextLv.mins-state.totalMins;
+    document.getElementById('levelDetail').textContent=`Noch ${fmtMins(rem)} bis Level ${lv.lv+1}`;
+  } else {
+    document.getElementById('levelDetail').textContent='Maximale Stufe erreicht!';
+  }
+  document.getElementById('progressFill').style.width=progress.toFixed(1)+'%';
+  document.getElementById('progressPct').textContent=Math.round(progress)+'%';
+  document.getElementById('totalHours').textContent=fmtHHMM(state.totalMins);
+  document.getElementById('sessionCount').textContent=state.sessions.length;
+  const todayMins=state.sessions.filter(s=>s.date===todayStr()).reduce((a,s)=>a+s.mins,0);
+  document.getElementById('todayTime').textContent=fmtHHMM(todayMins);
+  // Island
+  const el=document.getElementById('islandDisplay');
+  el.innerHTML=ISLAND_SVGS[lv.lv]||ISLAND_SVGS[1];
+}
+
+// ====== TIMER ======
+function startTimer() {
+  timerRunning=true;
+  timerStart=Date.now()-timerSeconds*1000;
+  timerInterval=setInterval(tickTimer,1000);
+  document.getElementById('btnStart').style.display='none';
+  document.getElementById('btnStop').style.display='block';
+  document.getElementById('timerStatus').textContent='Session lauft... Fokus bleiben!';
+  document.getElementById('timerStatus').style.color='var(--emerald)';
+}
+function tickTimer() {
+  timerSeconds=Math.floor((Date.now()-timerStart)/1000);
+  const h=Math.floor(timerSeconds/3600),m=Math.floor((timerSeconds%3600)/60),s=timerSeconds%60;
+  document.getElementById('timerDigits').textContent=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+function stopTimer() {
+  if(!timerRunning) return;
+  clearInterval(timerInterval); timerRunning=false;
+  const mins=Math.round(timerSeconds/60);
+  const subj=document.getElementById('timerSubject').value||'Allgemeines Lernen';
+  if(mins>0){ addSession(subj,mins,todayStr()); toast(`+${mins} Min. gespeichert!`); }
+  timerSeconds=0;
+  document.getElementById('timerDigits').textContent='00:00:00';
+  document.getElementById('btnStart').style.display='block';
+  document.getElementById('btnStop').style.display='none';
+  document.getElementById('timerStatus').textContent='Bereit zum Lernen';
+  document.getElementById('timerStatus').style.color='';
+  document.getElementById('timerSubject').value='';
+}
+function logPastSession() {
+  const subj=document.getElementById('pastSubject').value||'Lernen';
+  const date=document.getElementById('pastDate').value||todayStr();
+  const h=parseInt(document.getElementById('pastHours').value)||0;
+  const m=parseInt(document.getElementById('pastMins').value)||0;
+  const mins=h*60+m;
+  if(mins<=0){toast('Bitte Zeit eingeben!');return;}
+  addSession(subj,mins,date);
+  document.getElementById('pastSubject').value='';
+  document.getElementById('pastHours').value='';
+  document.getElementById('pastMins').value='';
+  toast(`Session eingetragen! +${fmtMins(mins)}`);
+}
+function addSession(subj,mins,date) {
+  state.sessions.unshift({subj,mins,date});
+  state.totalMins+=mins;
+  renderSessionLog();
+  updateDashboard();
+}
+function renderSessionLog() {
+  const el=document.getElementById('sessionLog');
+  if(!state.sessions.length){
+    el.innerHTML='<div style="font-size:13px;color:var(--text-secondary);text-align:center;padding:20px;">Noch keine Sessions. Leg los!</div>';
+    return;
+  }
+  el.innerHTML=state.sessions.slice(0,10).map(s=>`
+    <div class="session-item">
+      <div>
+        <div class="session-subject">${s.subj}</div>
+        <div class="session-meta">${s.date}</div>
+      </div>
+      <div class="session-duration">${fmtMins(s.mins)}</div>
+    </div>`).join('');
+}
+
+// ====== FRIENDS ======
+function toggleAddFriend() {
+  document.getElementById('addFriendModal').classList.toggle('show');
+}
+function addFriend() {
+  const code=document.getElementById('friendCodeInput').value.trim().toUpperCase();
+  if(!code||!code.startsWith('LERN-')){toast('Ungultiger Code! Format: LERN-XXXX');return;}
+  toast('Freundschaftsanfrage gesendet!');
+  document.getElementById('friendCodeInput').value='';
+}
+function renderFriends() {
+  const me={name:'Du',avatar:'DU',color:'#F5C842',online:true,mins:state.totalMins,lastSeen:'Jetzt',me:true};
+  const all=[me,...state.friends].sort((a,b)=>b.mins-a.mins);
+  const el=document.getElementById('friendList');
+  el.innerHTML=all.map((f,i)=>{
+    const lv=getLevel(f.mins);
+    const rankClass=i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+    const rankIcon=i===0?'1':i===1?'2':i===2?'3':`${i+1}`;
+    return `<div class="friend-card" style="${f.me?'border-color:rgba(245,200,66,0.5);':'' }">
+      <div class="friend-rank ${rankClass}">${rankIcon}</div>
+      <div class="friend-avatar" style="background:${f.color}22;color:${f.color};">${f.avatar}</div>
+      <div class="friend-info">
+        <div class="friend-name">${f.name}${f.me?' (Du)':''}</div>
+        <div class="friend-status ${f.online?'status-online':'status-offline'}">${f.online?'Lernt gerade':f.lastSeen}</div>
+      </div>
+      <div class="friend-right">
+        <div class="friend-level">Level ${lv.lv}</div>
+        <div class="friend-time">${fmtMins(f.mins)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ====== STATISTICS ======
+function renderStatistics() {
+  const today=todayStr();
+  const todayMins=state.sessions.filter(s=>s.date===today).reduce((a,s)=>a+s.mins,0);
+  // Week
+  const now=new Date();
+  const weekStart=new Date(now); weekStart.setDate(now.getDate()-6);
+  const weekMins=state.sessions.filter(s=>new Date(s.date)>=weekStart).reduce((a,s)=>a+s.mins,0);
+  // Month
+  const monthStr=today.slice(0,7);
+  const monthMins=state.sessions.filter(s=>s.date.startsWith(monthStr)).reduce((a,s)=>a+s.mins,0);
+
+  document.getElementById('statToday').textContent=`${Math.floor(todayMins/60)}h ${todayMins%60}m`;
+  document.getElementById('statWeek').textContent=`${Math.floor(weekMins/60)}h ${weekMins%60}m`;
+  document.getElementById('statMonth').textContent=`${Math.floor(monthMins/60)}h ${monthMins%60}m`;
+  document.getElementById('statTodayGoal').textContent=`${Math.floor(todayMins/60)}h`;
+  document.getElementById('statWeekGoal').textContent=`${Math.floor(weekMins/60)}h`;
+  const avgDay=state.sessions.length>0?Math.round(state.totalMins/Math.max(1,...state.sessions.map(s=>new Date(today)-new Date(s.date)).map(d=>Math.ceil(d/86400000)+1))):0;
+  document.getElementById('statMonthSub').textContent=`Ø ${Math.floor(avgDay/60)}h ${avgDay%60}m / Tag`;
+  document.getElementById('statTodayBar').style.width=Math.min(100,todayMins/3*100)+'%';
+  document.getElementById('statWeekBar').style.width=Math.min(100,weekMins/42*100)+'%';
+
+  // Line chart last 7 days
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(now); d.setDate(now.getDate()-i);
+    const ds=d.toISOString().split('T')[0];
+    const m=state.sessions.filter(s=>s.date===ds).reduce((a,s)=>a+s.mins,0);
+    days.push({label:['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()],mins:m});
+  }
+  const maxM=Math.max(1,...days.map(d=>d.mins));
+  const svg=document.getElementById('lineChartSvg');
+  const pts=days.map((d,i)=>`${(i/6)*480+10},${75-(d.mins/maxM)*65}`).join(' ');
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#1ABC9C" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#1ABC9C" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <polygon points="10,75 ${pts} ${(6/6)*480+10},75" fill="url(#lg)"/>
+    <polyline points="${pts}" fill="none" stroke="#1ABC9C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${days.map((d,i)=>`<circle cx="${(i/6)*480+10}" cy="${75-(d.mins/maxM)*65}" r="4" fill="#1ABC9C"/>`).join('')}
+  `;
+  document.getElementById('chartLabels').innerHTML=days.map(d=>`<span style="font-size:10px;color:var(--text-secondary);">${d.label}</span>`).join('');
+
+  // Week days avg
+  const dayNames=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const dayMins=Array(7).fill(0);
+  const dayCount=Array(7).fill(0);
+  state.sessions.forEach(s=>{
+    const d=new Date(s.date); const idx=(d.getDay()+6)%7;
+    dayMins[idx]+=s.mins; dayCount[idx]++;
+  });
+  const el2=document.getElementById('weekDaysRow');
+  el2.innerHTML=dayNames.map((n,i)=>{
+    const avg=dayCount[i]>0?Math.round(dayMins[i]/dayCount[i]):0;
+    const hasData=avg>0;
+    return `<div class="week-day">
+      <div class="week-day-label">${n}</div>
+      <div class="week-day-circle ${hasData?'':'dim'}">${avg>0?`${Math.floor(avg/60)}h`:'-'}</div>
+    </div>`;
+  }).join('');
+
+  // Calendar last 30 days
+  const calEl=document.getElementById('calGrid');
+  const headers=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  let calHtml=headers.map(h=>`<div class="cal-header">${h}</div>`).join('');
+  const dates=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date(now); d.setDate(now.getDate()-i);
+    dates.push(d);
+  }
+  // pad start
+  const firstDow=(dates[0].getDay()+6)%7;
+  for(let i=0;i<firstDow;i++) calHtml+=`<div class="cal-cell"></div>`;
+  dates.forEach(d=>{
+    const ds=d.toISOString().split('T')[0];
+    const m=state.sessions.filter(s=>s.date===ds).reduce((a,s)=>a+s.mins,0);
+    const h=Math.floor(m/60);
+    const cls=m>0?(m>=360?'has-data high':'has-data'):'';
+    calHtml+=`<div class="cal-cell ${cls}">
+      <span class="cal-date">${d.getDate()}</span>
+      ${m>0?`<span class="cal-hours">${h}h</span>`:''}
+    </div>`;
+  });
+  calEl.innerHTML=calHtml;
+
+  // Top courses
+  const courseMap={};
+  state.sessions.filter(s=>{
+    const d=new Date(s.date); return d>=weekStart;
+  }).forEach(s=>{
+    courseMap[s.subj]=(courseMap[s.subj]||0)+s.mins;
+  });
+  const sorted=Object.entries(courseMap).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('topCourses').innerHTML=sorted.length?sorted.slice(0,4).map(([name,mins])=>`
+    <div class="course-item">
+      <div><span class="course-dot"></span><span class="course-name">${name}</span></div>
+      <span class="course-time">${fmtMins(mins)}</span>
+    </div>`).join(''):`<div style="font-size:12px;color:var(--text-secondary);">Noch keine Sessions diese Woche.</div>`;
+
+  // Radar (avg by day of week)
+  const radarSvg=document.getElementById('radarSvg');
+  const cx=90,cy=90,r=60;
+  const angles=Array.from({length:7},(_,i)=>((i*360/7-90)*Math.PI/180));
+  const maxVal=Math.max(1,...dayMins.map((m,i)=>dayCount[i]>0?m/dayCount[i]:0));
+  const pts2=angles.map((a,i)=>{
+    const val=dayCount[i]>0?(dayMins[i]/dayCount[i]):0;
+    const rr=r*(val/maxVal);
+    return [cx+rr*Math.cos(a),cy+rr*Math.sin(a)];
+  });
+  const polyPts=pts2.map(p=>p.join(',')).join(' ');
+  const spokes=angles.map(a=>`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`).join('');
+  const labels=angles.map((a,i)=>`<text x="${cx+(r+12)*Math.cos(a)}" y="${cy+(r+12)*Math.sin(a)+4}" font-size="9" fill="#9AA0A6" text-anchor="middle">${dayNames[i]}</text>`).join('');
+  radarSvg.innerHTML=`
+    ${spokes}
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="${cx}" cy="${cy}" r="${r*0.6}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+    <polygon points="${polyPts}" fill="rgba(26,188,156,0.25)" stroke="#1ABC9C" stroke-width="1.5"/>
+    ${labels}
+  `;
+}
+
+// ====== TOAST ======
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// INIT
+document.getElementById('pastDate').value=todayStr();
+renderSessionLog();
+updateDashboard();
+</script>
+</body>
+</html>
